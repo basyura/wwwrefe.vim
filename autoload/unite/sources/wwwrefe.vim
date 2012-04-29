@@ -70,7 +70,6 @@ function! s:source_method.action_table.open.func(candidate)
   let list = [a:candidate.source__class, 'Object', 'Module', 'Enumerable', 'Kernel', 'Class']
   for clazz in list
     let body = s:wwwrender(clazz, a:candidate.word)
-    let &titlestring = body[1:9] . ':' . body[1:21]
     if body[1:9] != 'Not Found' && body[1:21] != 'Internal Server Error'
       break
     endif
