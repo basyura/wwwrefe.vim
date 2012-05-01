@@ -73,7 +73,8 @@ function! s:source_method.action_table.open.func(candidate)
   for clazz in [a:candidate.source__class]
     let flg = 0
     for type in ['i', 's']
-      let body = s:wwwrender(clazz, a:candidate.word, type)
+      let url  = s:generate_url(clazz, a:candidate.word, type)
+      let body = s:wwwrender(url)
       if body != ''
         let flg = 1
         break
@@ -84,8 +85,11 @@ function! s:source_method.action_table.open.func(candidate)
     endif
   endfor
 
-  call append(0, split(body, '\n'))
+  call append(0, split(body, '\n')[2:])
+  call append(2, '<' . url . '>')
   :0
+  setf markdown
+  setlocal wrap
   setlocal noswapfile
   setlocal nomodified
   setlocal nomodifiable
@@ -93,12 +97,16 @@ endfunction
 "
 "
 "
-function! s:wwwrender(class, method, type)
+function! s:generate_url(class, method, type)
   let url = s:base_url . 'method/' . a:class . '/' . a:type . '/' . a:method . '.html'
-  
   for val in s:url_convert
     let url = substitute(url, val[0], val[1], 'g')
   endfor
-
-  return wwwrenderer#render(url)
+  return url
+endfunction
+"
+"
+"
+function! s:wwwrender(url)
+  return wwwrenderer#render(a:url)
 endfunction
