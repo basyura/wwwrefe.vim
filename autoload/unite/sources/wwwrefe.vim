@@ -3,6 +3,8 @@ function! unite#sources#wwwrefe#define()
   return [s:source_class, s:source_method]
 endfunction
 
+let s:base_url   = 'http://doc.ruby-lang.org/ja/1.9.3/'
+"let s:base_url = 'http://doc.okkez.net/193/view/'
 let s:fpath_root = expand('<sfile>:p:h') . '/../../../'
 
 let s:url_convert = [
@@ -68,10 +70,16 @@ function! s:source_method.action_table.open.func(candidate)
 
   " 継承関係とモジュールをたどらないといけない
   let list = [a:candidate.source__class, 'Object', 'Module', 'Enumerable', 'Kernel', 'Class']
-  for clazz in list
-    let body = s:wwwrender(clazz, a:candidate.word)
-    let &titlestring = body[1:9] . ':' . body[1:21]
-    if body[1:9] != 'Not Found' && body[1:21] != 'Internal Server Error'
+  for clazz in [a:candidate.source__class]
+    let flg = 0
+    for type in ['i', 's']
+      let body = s:wwwrender(clazz, a:candidate.word, type)
+      if body != ''
+        let flg = 1
+        break
+      endif
+    endfor
+    if flg
       break
     endif
   endfor
@@ -85,8 +93,8 @@ endfunction
 "
 "
 "
-function! s:wwwrender(class, method)
-  let url = 'http://doc.okkez.net/193/view/method/' . a:class . '/i/' . a:method
+function! s:wwwrender(class, method, type)
+  let url = s:base_url . 'method/' . a:class . '/' . a:type . '/' . a:method . '.html'
   
   for val in s:url_convert
     let url = substitute(url, val[0], val[1], 'g')
