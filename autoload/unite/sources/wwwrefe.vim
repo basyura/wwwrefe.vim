@@ -67,10 +67,11 @@ function! s:source_method.action_table.open.func(candidate)
 
   execute 'split wwwrefe'
   setlocal modifiable
+  silent %delete _
 
   " 継承関係とモジュールをたどらないといけない
   let list = [a:candidate.source__class, 'Object', 'Module', 'Enumerable', 'Kernel', 'Class']
-  for clazz in [a:candidate.source__class]
+  for clazz in list
     let flg = 0
     for type in ['i', 's']
       let url  = s:generate_url(clazz, a:candidate.word, type)
