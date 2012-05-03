@@ -65,7 +65,7 @@ endfunction
 let s:source_method.action_table.open = {'description' : 'open reference'}
 function! s:source_method.action_table.open.func(candidate)
 
-  execute 'split wwwrefe'
+  execute 'edit! wwwrefe'
   setlocal modifiable
   silent %delete _
 
@@ -109,5 +109,5 @@ endfunction
 "
 "
 function! s:wwwrender(url)
-  return wwwrenderer#render(a:url)
+  return wwwrefe#wwwrenderer#render(a:url)
 endfunction
