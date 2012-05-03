@@ -9,10 +9,13 @@ let s:fpath_root = expand('<sfile>:p:h') . '/../../../'
 
 let s:url_convert = [
   \  ['=' , '=3d'],
+  \  ['<' , '=3c'],
+  \  ['>' , '=3e'],
   \  ['!' , '=21'],
   \  ['?' , '=3f'],
   \  ['[' , '=5b'],
   \  [']' , '=5d'],
+  \  ['\~' , '=7e'],
   \ ]
 
 let s:source_class = {
@@ -50,11 +53,13 @@ function! s:source_method.gather_candidates(args, context)
   let candidates = []
   let class = a:args[0]
   call unite#print_message(class)
-  for line in readfile(s:fpath_root . '/data/' . class)
+  let methods = readfile(s:fpath_root . '/data/' . class) 
+  for line in methods[1:]
     call add(candidates, {
           \ 'word'          : line,
           \ 'source'        : 'wwwrefe',
           \ 'source__class' : class,
+          \ 'source__related_classes' : split(methods[0]),
           \ })
   endfor
   return candidates
@@ -69,13 +74,14 @@ function! s:source_method.action_table.open.func(candidate)
   setlocal modifiable
   silent %delete _
 
-  " 継承関係とモジュールをたどらないといけない
-  let list = [a:candidate.source__class, 'Object', 'Module', 'Enumerable', 'Kernel', 'Class']
+  let list = a:candidate.source__related_classes
+  " 継承関係とモジュールをたどる
   for clazz in list
     let flg = 0
     for type in ['i', 's']
-      let url  = s:generate_url(clazz, a:candidate.word, type)
-      let body = s:wwwrender(url)
+      let method = a:candidate.word
+      let url    = s:generate_url(clazz, method, type)
+      let body   = s:wwwrender(url)
       if body != ''
         let flg = 1
         break
@@ -86,10 +92,15 @@ function! s:source_method.action_table.open.func(candidate)
     endif
   endfor
 
+  if body == ''
+    echoerr url . ' is not found'
+  endif
+
   call append(0, split(body, '\n')[2:])
   call append(2, '<' . url . '>')
   :0
   setf markdown
+  setlocal buftype=nofile
   setlocal wrap
   setlocal noswapfile
   setlocal nomodified
