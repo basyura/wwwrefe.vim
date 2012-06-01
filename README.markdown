@@ -14,6 +14,18 @@ unite.vim
 
     :Unite wwwrefe
 
+variables
+---------
+
+g:wwwrefe_myrurema
+    
+    use myrurema.
+    default : 0
+
+    install
+      gem install myrurema
+      rurema --init
+
 License
 -------
 
