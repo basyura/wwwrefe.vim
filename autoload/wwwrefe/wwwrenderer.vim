@@ -2,7 +2,7 @@
 "  original
 "  |
 "  | File: wwwrenderer.vim
-"  | Last Change: 03-May-2012.
+"  | Last Change: 02-Jun-2012.
 "  | Version: 0.01
 "  |
 "  | *wwwrenderer.vim* www renderer for vim
@@ -132,8 +132,8 @@ function! wwwrefe#wwwrenderer#render(url, ...)
     return ''
   endif
 
-  "let enc = "utf-8"
-  let enc = "euc-jp"
+  let enc = "utf-8"
+  "let enc = "euc-jp"
   let mx = '.*charset="\?\([^;]\+\)'
   for h in res.header
     if h =~ "^Content-Type"
